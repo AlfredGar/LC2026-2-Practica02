@@ -50,14 +50,20 @@ sinRepetidos (x:xs)
 
 
 --Ejercicio 2
+
+--Función auxiliar para checar si un elemento existe en la lista.
+pertenece :: String -> [String] -> Bool
+pertenece _ [] = False
+pertenece x (y:ys) = x == y || pertenece x ys
+
 interpretacion :: Prop -> Estado -> Bool
-interpretacion (Cons b) _ = b
-interpretacion (Var p) e = p `elem` e
-interpretacion (Not p) e = not (interpretacion p e)
-interpretacion (And p q) e = (interpretacion p e) && (interpretacion q e)
-interpretacion (Or p q) e = (interpretacion p e) || (interpretacion q e)
-interpretacion (Impl p q) e = not (interpretacion p e) || (interpretacion q e)
-interpretacion (Syss p q) e = (interpretacion p e) == (interpretacion q e)
+interpretacion (Cons b) _   = b
+interpretacion (Var p) i    = pertenece p i
+interpretacion (Not p) i    = not (interpretacion p i)
+interpretacion (And p q) i  = interpretacion p i && interpretacion q i
+interpretacion (Or p q) i   = interpretacion p i || interpretacion q i
+interpretacion (Impl p q) i = not (interpretacion p i) || interpretacion q i
+interpretacion (Syss p q) i = interpretacion p i == interpretacion q i
 
 
 --Ejercicio 3
@@ -66,8 +72,9 @@ estadosPosibles f = conjPotencia (variables f)
  
 
 --Ejercicio 4
+
 modelos :: Prop -> [Estado]
-modelos f = [e | e <- estadosPosibles f, interpretacion f e]
+modelos f = [i | i <- estadosPosibles f, interpretacion f i]
 
 --Ejercicio 5
 sonEquivalentes :: Prop -> Prop -> Bool
@@ -97,9 +104,14 @@ unirSinRepetir (x:xs) ys =
 
 
 --Ejercicio 6 
-tautologia :: Prop -> Bool
-tautologia f = length (modelos f) == length (estadosPosibles f)
 
+-- Función auxiliar que checa que los elementos cumplan el predicado
+todosVerdaderos :: [Bool] -> Bool
+todosVerdaderos [] = True
+todosVerdaderos (x:xs) = x && todosVerdaderos xs
+
+tautologia :: Prop -> Bool
+tautologia f = todosVerdaderos [interpretacion f i | i <- estadosPosibles f]
 
 --Ejercicio 7
 contradiccion :: Prop -> Bool
