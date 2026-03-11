@@ -98,11 +98,12 @@ unirSinRepetir (x:xs) ys =
 
 --Ejercicio 6 
 tautologia :: Prop -> Bool
-tautologia = undefined
+tautologia f = length (modelos f) == length (estadosPosibles f)
+
 
 --Ejercicio 7
 contradiccion :: Prop -> Bool
-contradiccion = undefined
+contradiccion f = null (modelos f)
 
 --Ejercicio 8
 consecuenciaLogica :: [Prop] -> Prop -> Bool
