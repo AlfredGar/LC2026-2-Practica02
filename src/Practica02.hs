@@ -31,15 +31,39 @@ type Estado = [String]
 
 --Ejercicio 1
 variables :: Prop -> [String]
-variables = undefined
+variables f = sinRepetidos (aux f)
+  where 
+    aux (Var p) = [p]
+    aux (Cons _) = []
+    aux (Not p) = aux p
+    aux (And p q) = aux p ++ aux q
+    aux (Or p q) = aux p ++ aux q
+    aux (Impl p q) = aux p ++ aux q
+    aux (Syss p q) = aux p ++ aux q
+
+
+-- Función auxiliar propia para eliminar duplicados
+sinRepetidos [] = []
+sinRepetidos (x:xs)
+  | x `elem` xs = sinRepetidos xs
+  | otherwise = x : sinRepetidos xs
+
 
 --Ejercicio 2
 interpretacion :: Prop -> Estado -> Bool
-interpretacion = undefined
+interpretacion (Cons b) _ = b
+interpretacion (Var p) e = p `elem` e
+interpretacion (Not p) e = not (interpretacion p e)
+interpretacion (And p q) e = (interpretacion p e) && (interpretacion q e)
+interpretacion (Or p q) e = (interpretacion p e) || (interpretacion q e)
+interpretacion (Impl p q) e = not (interpretacion p e) || (interpretacion q e)
+interpretacion (Syss p q) e = (interpretacion p e) == (interpretacion q e)
+
 
 --Ejercicio 3
 estadosPosibles :: Prop -> [Estado]
-estadosPosibles = undefined
+estadosPosibles f = conjPotencia (variables f)
+ 
 
 --Ejercicio 4
 modelos :: Prop -> [Estado]
