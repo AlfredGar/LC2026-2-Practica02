@@ -118,8 +118,31 @@ contradiccion :: Prop -> Bool
 contradiccion f = null (modelos f)
 
 --Ejercicio 8
+-- Función auxiliar que junta, une dos listas sin repetir elementos
+union :: Eq a => [a] -> [a] -> [a]
+union [] ys = ys
+union (x:xs) ys 
+    | x `elem` ys = union xs ys
+    | otherwise      = x : union xs ys
+
+-- Función auxiliar que obtiene todas las variables de una lista de fórmulas
+varLista :: [Prop] -> [String]
+varLista [] = []
+varLista (f:fs) = variables f `union` varLista fs
+
 consecuenciaLogica :: [Prop] -> Prop -> Bool
-consecuenciaLogica = undefined
+consecuenciaLogica premisas conclusion =
+  let 
+        varSistema = varLista premisas `union` variables conclusion
+        
+        estados = conjPotencia varSistema
+        
+        estadosModeloPre = [i | i <- estados, 
+                                     todosVerdaderos [interpretacion p i | p <- premisas]]
+    in 
+        todosVerdaderos [interpretacion conclusion i | i <- estadosModeloPre]
+
+
 
 
 --Funcion auxiliar
