@@ -67,11 +67,34 @@ estadosPosibles f = conjPotencia (variables f)
 
 --Ejercicio 4
 modelos :: Prop -> [Estado]
-modelos = undefined
+modelos f = [e | e <- estadosPosibles f, interpretacion f e]
 
 --Ejercicio 5
 sonEquivalentes :: Prop -> Prop -> Bool
-sonEquivalentes = undefined
+sonEquivalentes f g = estadosIguales f g estados
+  where 
+    varsTotales = unirSinRepetir (variables f) (variables g)
+    estados = conjPotencia varsTotales
+
+
+-- Funciones auxiliares
+ 
+estadosIguales :: Prop -> Prop -> [Estado] -> Bool
+estadosIguales _ _ [] = True
+estadosIguales f g (e:es) = 
+    if interpretacion f e == interpretacion g e
+    then estadosIguales f g es 
+    else False
+
+unirSinRepetir :: [String] -> [String] -> [String]
+unirSinRepetir [] ys = ys
+unirSinRepetir (x:xs) ys =
+    if x `elem` ys
+    then unirSinRepetir xs ys
+    else x : unirSinRepetir xs ys 
+
+
+
 
 --Ejercicio 6 
 tautologia :: Prop -> Bool
